@@ -1,0 +1,14 @@
+# Derleme çıktıları (dist/CpuZamanlayici.jar bilerek depoda tutulur)
+build/
+out/
+bin/
+*.class
+
+# İşletim sistemi ve IDE dosyaları
+.DS_Store
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
