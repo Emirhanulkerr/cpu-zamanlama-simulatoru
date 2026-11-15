@@ -17,6 +17,7 @@ hangi sürecin ne zaman çalışacağını Gantt şeması, süreç tablosu ve ö
 - **Karşılaştırma görünümü:** aynı süreç seti tüm algoritmalarla çalıştırılır; tablo, çubuk grafik
   ve ortak zaman eksenli Gantt şemalarıyla yan yana gösterilir
 - **Veri girişi:** düzenlenebilir tablo, hazır örnekler, rastgele üretim, CSV yükleme / kaydetme
+- **Koyu ve açık tema:** varsayılan koyu temadır; sağ üstteki düğmeyle değiştirilir
 - **Konsol modu:** aynı simülasyon grafik arayüz olmadan, ASCII Gantt şemasıyla
 
 ## Çalıştırma
@@ -26,6 +27,7 @@ Gereksinim: **Java 17 veya üzeri** (JDK). Başka hiçbir kütüphane gerekmez.
 ```bash
 # Hazır JAR ile (her işletim sisteminde)
 java -jar dist/CpuZamanlayici.jar
+java -jar dist/CpuZamanlayici.jar --acik    # açık temayla başlatır
 
 # Kaynaktan derleyip çalıştırmak için
 ./run.sh          # macOS / Linux
@@ -70,6 +72,7 @@ P2              1        4        1          3     18     17       13      2
    öncelik yönünü seçin. Sonuçlar her değişiklikte anında güncellenir.
 3. **Simülasyonu Başlat** düğmesi seçili algoritmayı baştan itibaren adım adım oynatır.
 4. Sağ üstteki **Karşılaştırma** sekmesi tüm algoritmaların sonuçlarını yan yana gösterir.
+5. Sağ üst köşedeki güneş / ay düğmesi koyu ve açık tema arasında geçiş yapar; girilen veriler korunur.
 
 ![Karşılaştırma görünümü](docs/karsilastirma.png)
 

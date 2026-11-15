@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -18,13 +20,17 @@ import javax.swing.Icon;
  */
 final class Icons {
 
-    enum Shape { PLAY, PAUSE, STEP_BACK, STEP_FORWARD, TO_START, TO_END, PLUS, CHEVRON_DOWN }
+    enum Shape { PLAY, PAUSE, STEP_BACK, STEP_FORWARD, TO_START, TO_END, PLUS, CHEVRON_DOWN, CHEVRON_UP, SUN, MOON }
 
     private Icons() {
     }
 
     static Icon of(Shape shape, Color color) {
         return new ShapeIcon(shape, color, 14);
+    }
+
+    static Icon of(Shape shape, Color color, int size) {
+        return new ShapeIcon(shape, color, size);
     }
 
     /** Tablo hücrelerinde süreç adının yanında duran renk noktası. */
@@ -74,13 +80,30 @@ final class Icons {
                     g.fill(new RoundRectangle2D.Double(s * 0.42, s * 0.12, s * 0.16, s * 0.76, 2, 2));
                     g.fill(new RoundRectangle2D.Double(s * 0.12, s * 0.42, s * 0.76, s * 0.16, 2, 2));
                 }
-                case CHEVRON_DOWN -> {
+                case CHEVRON_DOWN, CHEVRON_UP -> {
+                    boolean down = shape == Shape.CHEVRON_DOWN;
                     Path2D path = new Path2D.Double();
-                    path.moveTo(s * 0.22, s * 0.38);
-                    path.lineTo(s * 0.50, s * 0.66);
-                    path.lineTo(s * 0.78, s * 0.38);
+                    path.moveTo(s * 0.22, s * (down ? 0.38 : 0.62));
+                    path.lineTo(s * 0.50, s * (down ? 0.66 : 0.34));
+                    path.lineTo(s * 0.78, s * (down ? 0.38 : 0.62));
                     g.setStroke(new BasicStroke(1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                     g.draw(path);
+                }
+                case SUN -> {
+                    g.fill(new Ellipse2D.Double(s * 0.32, s * 0.32, s * 0.36, s * 0.36));
+                    g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    for (int i = 0; i < 8; i++) {
+                        double angle = i * Math.PI / 4;
+                        g.draw(new Line2D.Double(
+                                s * 0.5 + Math.cos(angle) * s * 0.34, s * 0.5 + Math.sin(angle) * s * 0.34,
+                                s * 0.5 + Math.cos(angle) * s * 0.46, s * 0.5 + Math.sin(angle) * s * 0.46));
+                    }
+                }
+                case MOON -> {
+                    // Hilal: büyük daireden, sağ üste kaydırılmış ikinci bir daire çıkarılır.
+                    Area moon = new Area(new Ellipse2D.Double(s * 0.10, s * 0.10, s * 0.80, s * 0.80));
+                    moon.subtract(new Area(new Ellipse2D.Double(s * 0.36, s * 0.02, s * 0.70, s * 0.70)));
+                    g.fill(moon);
                 }
             }
             g.dispose();

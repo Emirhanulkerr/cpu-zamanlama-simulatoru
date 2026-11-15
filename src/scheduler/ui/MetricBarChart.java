@@ -1,6 +1,5 @@
 package scheduler.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -21,7 +20,7 @@ import scheduler.model.SimulationResult;
 
 /**
  * Tek bir ölçümü algoritmalar arasında karşılaştıran yatay çubuk grafik.
- * En iyi (en düşük) değerli çubuk koyu, diğerleri açık renkte çizilir.
+ * En iyi (en düşük) değerli çubuk vurgu renginde, diğerleri soluk çizilir.
  */
 final class MetricBarChart extends JComponent {
 
@@ -29,7 +28,6 @@ final class MetricBarChart extends JComponent {
     private static final int ROW_HEIGHT = 24;
     private static final int BAR_HEIGHT = 14;
     private static final int VALUE_ROOM = 46;
-    private static final Color OTHER_BAR = new Color(0x86B6EF);
 
     private record Bar(String label, double value) {
     }
@@ -114,7 +112,7 @@ final class MetricBarChart extends JComponent {
             double width = max == 0 ? 0 : bar.value() / max * maxBarWidth;
             double barY = rowTop + (ROW_HEIGHT - BAR_HEIGHT) / 2.0;
             if (width > 0) {
-                g.setColor(isBest ? Theme.ACCENT : OTHER_BAR);
+                g.setColor(isBest ? Theme.ACCENT : Theme.BAR_OTHER);
                 g.fill(new RoundRectangle2D.Double(axisX, barY, width, BAR_HEIGHT, 8, 8));
                 g.fill(new Rectangle2D.Double(axisX, barY, Math.min(width, 4), BAR_HEIGHT));
             }

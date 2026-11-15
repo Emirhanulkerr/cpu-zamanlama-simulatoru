@@ -48,7 +48,7 @@ final class ComparisonPanel extends JPanel {
                 .headerRight(note("Vurgulu hücreler o ölçütteki en iyi değerdir"))
                 .content(buildTable()));
         content.add(new Card("Ortalama Süreler")
-                .headerRight(note("Düşük değer daha iyidir · koyu çubuk en iyi değer"))
+                .headerRight(note("Düşük değer daha iyidir · vurgulu çubuk en iyi değer"))
                 .content(charts));
         content.add(new Card("Gantt Şemaları")
                 .headerRight(note("Ortak zaman ekseni"))
@@ -59,7 +59,7 @@ final class ComparisonPanel extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(18);
+        FlatScrollBarUI.install(scrollPane);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -98,6 +98,7 @@ final class ComparisonPanel extends JPanel {
 
         // Tablo kaydırma bölmesinde olmadığı için başlığı elle üstüne yerleştirilir.
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Theme.SURFACE);
         panel.setBorder(BorderFactory.createLineBorder(Theme.GRID));
         panel.add(table.getTableHeader(), BorderLayout.NORTH);
         panel.add(table, BorderLayout.CENTER);

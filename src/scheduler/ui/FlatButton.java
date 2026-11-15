@@ -23,7 +23,7 @@ final class FlatButton extends JButton {
     enum Kind {
         /** Ana eylem: dolgulu, vurgu renginde. */
         PRIMARY,
-        /** İkincil eylem: beyaz zemin, ince çerçeve. */
+        /** İkincil eylem: sade zemin, ince çerçeve. */
         SECONDARY,
         /** Yalnızca simge taşıyan, çerçevesiz düğme. */
         GHOST
@@ -78,18 +78,18 @@ final class FlatButton extends JButton {
         switch (kind) {
             case PRIMARY -> {
                 Color fill = pressed ? Theme.ACCENT_PRESSED : hover ? Theme.ACCENT_HOVER : Theme.ACCENT;
-                g.setColor(isEnabled() ? fill : Theme.lighten(Theme.ACCENT, 0.55));
+                g.setColor(isEnabled() ? fill : Theme.fade(Theme.ACCENT, 0.6));
                 g.fill(shape);
             }
             case SECONDARY -> {
-                g.setColor(pressed ? Theme.GRID : hover ? Theme.SURFACE_ALT : Theme.SURFACE);
+                g.setColor(pressed ? Theme.CONTROL_PRESSED : hover ? Theme.CONTROL_HOVER : Theme.CONTROL);
                 g.fill(shape);
                 g.setColor(Theme.BORDER);
                 g.draw(shape);
             }
             case GHOST -> {
                 if (pressed || hover) {
-                    g.setColor(pressed ? Theme.GRID : Theme.SURFACE_ALT);
+                    g.setColor(pressed ? Theme.CONTROL_PRESSED : Theme.CONTROL_HOVER);
                     g.fill(shape);
                 }
             }

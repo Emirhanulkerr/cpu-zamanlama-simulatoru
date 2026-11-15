@@ -2,6 +2,7 @@ package scheduler;
 
 import java.awt.GraphicsEnvironment;
 import java.util.Arrays;
+import java.util.List;
 
 import scheduler.cli.ConsoleApp;
 import scheduler.ui.MainFrame;
@@ -10,7 +11,8 @@ import scheduler.ui.MainFrame;
  * Programın giriş noktası.
  *
  * <ul>
- *   <li>Argümansız çalıştırıldığında grafik arayüzü açar.</li>
+ *   <li>Argümansız çalıştırıldığında grafik arayüzü koyu temayla açar.</li>
+ *   <li>{@code --acik} ile grafik arayüz açık temayla başlar.</li>
  *   <li>{@code --cli} ile çalıştırıldığında konsol modunda çalışır
  *       (ayrıntılar için {@code --cli --yardim}).</li>
  * </ul>
@@ -28,7 +30,7 @@ public final class Main {
             System.err.println("Grafik ortamı bulunamadı; konsol modu için --cli seçeneğini kullanın.");
             System.exit(1);
         } else {
-            MainFrame.launch();
+            MainFrame.launch(!List.of(args).contains("--acik"));
         }
     }
 }

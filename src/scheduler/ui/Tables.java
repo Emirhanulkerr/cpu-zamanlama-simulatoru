@@ -8,8 +8,10 @@ import java.util.function.IntFunction;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -39,6 +41,7 @@ final class Tables {
         table.setSelectionForeground(Theme.TEXT);
 
         JTableHeader header = table.getTableHeader();
+        header.setBackground(Theme.SURFACE_ALT);
         header.setReorderingAllowed(false);
         header.setResizingAllowed(false);
         header.setDefaultRenderer(new HeaderRenderer(headerTooltips));
@@ -52,7 +55,15 @@ final class Tables {
     static JScrollPane scroll(JTable table) {
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createLineBorder(Theme.GRID));
+        scrollPane.setBackground(Theme.SURFACE);
         scrollPane.getViewport().setBackground(Theme.SURFACE);
+        FlatScrollBarUI.install(scrollPane);
+
+        // Kaydırma çubuğunun üstünde kalan köşe, tablo başlığıyla aynı zemini alır.
+        JPanel corner = new JPanel();
+        corner.setBackground(Theme.SURFACE_ALT);
+        corner.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.GRID));
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, corner);
         return scrollPane;
     }
 

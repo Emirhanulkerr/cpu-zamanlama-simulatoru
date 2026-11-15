@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicTextFieldUI;
 
 /**
  * Süreç tablosunun hücre düzenleyicisi. Tek tıklamayla açılır ve mevcut değeri seçili getirir.
@@ -18,11 +19,8 @@ import javax.swing.border.Border;
  */
 final class TextCellEditor extends DefaultCellEditor {
 
-    private static final Border NORMAL = BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Theme.ACCENT, 2), BorderFactory.createEmptyBorder(0, 6, 0, 6));
-    private static final Border INVALID = BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(0xD03B3B), 2), BorderFactory.createEmptyBorder(0, 6, 0, 6));
-
+    private final Border normalBorder = frame(Theme.ACCENT);
+    private final Border invalidBorder = frame(Theme.DANGER);
     private final JTextField field;
     private final boolean integer;
     private Object value;
@@ -32,8 +30,19 @@ final class TextCellEditor extends DefaultCellEditor {
         super(new JTextField());
         this.integer = integer;
         this.field = (JTextField) getComponent();
+        field.setUI(new BasicTextFieldUI());
         field.setHorizontalAlignment(integer ? SwingConstants.CENTER : SwingConstants.LEFT);
+        field.setBackground(Theme.SURFACE);
+        field.setForeground(Theme.TEXT);
+        field.setCaretColor(Theme.TEXT);
+        field.setSelectionColor(Theme.ACCENT_SOFT);
+        field.setSelectedTextColor(Theme.TEXT);
         setClickCountToStart(1);
+    }
+
+    private static Border frame(Color color) {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(color, 2), BorderFactory.createEmptyBorder(0, 6, 0, 6));
     }
 
     @Override
@@ -41,7 +50,7 @@ final class TextCellEditor extends DefaultCellEditor {
         super.getTableCellEditorComponent(table, cellValue, isSelected, row, column);
         value = null;
         field.setFont(table.getFont());
-        field.setBorder(NORMAL);
+        field.setBorder(normalBorder);
         SwingUtilities.invokeLater(field::selectAll);
         return field;
     }
@@ -53,7 +62,7 @@ final class TextCellEditor extends DefaultCellEditor {
             try {
                 value = Integer.valueOf(text);
             } catch (NumberFormatException e) {
-                field.setBorder(INVALID);
+                field.setBorder(invalidBorder);
                 return false;
             }
         } else {

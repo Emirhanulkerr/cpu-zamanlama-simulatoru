@@ -1,6 +1,7 @@
 package scheduler.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -27,6 +28,8 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.BasicMenuItemUI;
+import javax.swing.plaf.basic.BasicPopupMenuUI;
 
 import scheduler.algorithm.AlgorithmType;
 import scheduler.io.ProcessCsv;
@@ -52,14 +55,29 @@ final class InputPanel extends JPanel {
     private Runnable changeListener = () -> { };
     private Runnable runListener = () -> { };
 
-    InputPanel() {
+    /**
+     * Panelin taşıdığı girdi. Tema değiştiğinde arayüz baştan kurulurken
+     * kullanıcının girdiği veriler bununla yeni panele aktarılır.
+     */
+    record State(List<SimProcess> processes, AlgorithmType algorithm, int quantum, boolean higherNumberIsHigherPriority) {
+    }
+
+    /** @param initial başlangıç girdisi; {@code null} ise ilk hazır örnek yüklenir */
+    InputPanel(State initial) {
         super(new VStackLayout(12));
         setOpaque(false);
         setPreferredSize(new Dimension(346, 0));
         add(buildProcessCard(), VStackLayout.FILL);
         add(buildAlgorithmCard());
 
-        model.setProcesses(SampleData.all().get(0).processes());
+        if (initial == null) {
+            model.setProcesses(SampleData.all().get(0).processes());
+        } else {
+            model.setProcesses(initial.processes());
+            algorithmCombo.setSelectedItem(initial.algorithm());
+            quantumSpinner.setValue(initial.quantum());
+            priorityCombo.setSelectedIndex(initial.higherNumberIsHigherPriority() ? 1 : 0);
+        }
         updateProcessCount();
         updateDescription();
 
@@ -91,6 +109,10 @@ final class InputPanel extends JPanel {
             table.getCellEditor().stopCellEditing();
         }
         return model.processes();
+    }
+
+    State state() {
+        return new State(processes(), algorithm(), quantum(), higherNumberIsHigherPriority());
     }
 
     AlgorithmType algorithm() {
@@ -188,16 +210,51 @@ final class InputPanel extends JPanel {
     }
 
     private void showSampleMenu(FlatButton anchor) {
-        JPopupMenu menu = new JPopupMenu();
+        buildSampleMenu().show(anchor, 0, anchor.getHeight() + 2);
+    }
+
+    /** Hazır örneklerin listelendiği, temaya uyan açılır menü. */
+    private JPopupMenu buildSampleMenu() {
+        JPopupMenu menu = new JPopupMenu() {
+            @Override
+            public void updateUI() {
+                setUI(new BasicPopupMenuUI());
+            }
+        };
+        menu.setBackground(Theme.CONTROL);
+        menu.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Theme.BORDER), BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+
         for (SampleData.Sample sample : SampleData.all()) {
-            JMenuItem item = new JMenuItem(sample.title());
+            JMenuItem item = new JMenuItem(sample.title()) {
+                @Override
+                public void updateUI() {
+                    setUI(new SampleMenuItemUI());
+                }
+            };
+            item.setOpaque(true);
+            item.setBackground(Theme.CONTROL);
+            item.setForeground(Theme.TEXT);
+            item.setFont(Theme.font(Font.PLAIN, 12.5f));
+            item.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 14));
             item.addActionListener(e -> {
                 stopEditing();
                 model.setProcesses(sample.processes());
             });
             menu.add(item);
         }
-        menu.show(anchor, 0, anchor.getHeight() + 2);
+        return menu;
+    }
+
+    /** Menü satırının üzerine gelindiğinde tema renkleriyle vurgulanmasını sağlar. */
+    private static final class SampleMenuItemUI extends BasicMenuItemUI {
+
+        @Override
+        protected void installDefaults() {
+            super.installDefaults();
+            selectionBackground = Theme.ACCENT_SOFT;
+            selectionForeground = Theme.TEXT;
+        }
     }
 
     private void loadCsv() {
@@ -272,6 +329,7 @@ final class InputPanel extends JPanel {
     private Card buildAlgorithmCard() {
         algorithmCombo.setFont(Theme.font(Font.PLAIN, 12.5f));
         algorithmCombo.setMaximumRowCount(AlgorithmType.values().length);
+        FlatComboBoxUI.install(algorithmCombo);
 
         description.setFont(Theme.font(Font.PLAIN, 11.5f));
         description.setForeground(Theme.TEXT_SECONDARY);
@@ -286,13 +344,15 @@ final class InputPanel extends JPanel {
         description.setPreferredSize(new Dimension(10, 4 * lineHeight));
 
         quantumSpinner.setFont(Theme.font(Font.PLAIN, 12.5f));
-        quantumSpinner.setPreferredSize(new Dimension(70, quantumSpinner.getPreferredSize().height));
+        FlatSpinnerUI.install(quantumSpinner);
+        quantumSpinner.setPreferredSize(new Dimension(70, 28));
         quantumSpinner.setToolTipText("Round Robin'de bir sürecin kesintisiz çalışabileceği en uzun süre");
         priorityCombo.setFont(Theme.font(Font.PLAIN, 12.5f));
+        FlatComboBoxUI.install(priorityCombo);
         priorityCombo.setToolTipText("Öncelikli zamanlamada hangi sayının daha yüksek öncelik sayılacağı");
 
         FlatButton runButton = new FlatButton("Simülasyonu Başlat",
-                Icons.of(Icons.Shape.PLAY, Theme.SURFACE), FlatButton.Kind.PRIMARY);
+                Icons.of(Icons.Shape.PLAY, Color.WHITE), FlatButton.Kind.PRIMARY);
         runButton.setFont(Theme.font(Font.BOLD, 13.5f));
         runButton.setBorder(BorderFactory.createEmptyBorder(11, 12, 11, 12));
         runButton.setToolTipText("Seçili algoritmayı baştan itibaren adım adım oynatır");

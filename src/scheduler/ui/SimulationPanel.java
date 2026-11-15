@@ -1,6 +1,7 @@
 package scheduler.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -50,8 +51,8 @@ final class SimulationPanel extends JPanel {
     private final MetricTile switchTile = new MetricTile("Bağlam değişimi", "kez",
             "CPU'nun bir süreçten farklı bir sürece geçme sayısı");
 
-    private final Icon playIcon = Icons.of(Icons.Shape.PLAY, Theme.SURFACE);
-    private final Icon pauseIcon = Icons.of(Icons.Shape.PAUSE, Theme.SURFACE);
+    private final Icon playIcon = Icons.of(Icons.Shape.PLAY, Color.WHITE);
+    private final Icon pauseIcon = Icons.of(Icons.Shape.PAUSE, Color.WHITE);
     private final FlatButton playButton = new FlatButton("", playIcon, FlatButton.Kind.PRIMARY);
     private final FlatButton toStartButton = iconButton(Icons.Shape.TO_START, "Başa dön");
     private final FlatButton stepBackButton = iconButton(Icons.Shape.STEP_BACK, "Bir birim geri");
@@ -135,6 +136,11 @@ final class SimulationPanel extends JPanel {
         }
     }
 
+    /** Animasyonu durdurur; panel arayüzden kaldırılmadan önce çağrılır. */
+    void stop() {
+        timer.stop();
+    }
+
     // ------------------------------------------------------------- oynatma
 
     private void play() {
@@ -212,7 +218,7 @@ final class SimulationPanel extends JPanel {
             setPlayTime(result.totalTime());
         });
 
-        slider.setOpaque(false);
+        FlatSliderUI.install(slider);
         slider.setToolTipText("Zamanda gezinmek için sürükleyin");
         slider.addChangeListener(e -> {
             if (!updatingSlider && result != null) {
@@ -233,6 +239,7 @@ final class SimulationPanel extends JPanel {
         speedCombo.setSelectedIndex(1);
         speedCombo.setFont(Theme.font(Font.PLAIN, 12f));
         speedCombo.setToolTipText("Oynatma hızı");
+        FlatComboBoxUI.install(speedCombo);
         fixSize(speedCombo, speedCombo.getPreferredSize());
 
         Box buttons = Box.createHorizontalBox();

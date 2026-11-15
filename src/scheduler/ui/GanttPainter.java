@@ -45,7 +45,7 @@ final class GanttPainter {
                 textColor = Theme.TEXT_MUTED;
             } else {
                 Color color = Theme.processColor(segment.process().id());
-                g.setColor(faded ? Theme.lighten(color, 0.72) : color);
+                g.setColor(faded ? Theme.fade(color, 0.72) : color);
                 g.fill(shape);
                 label = segment.process().name();
                 textColor = faded ? Theme.TEXT_MUTED : Theme.labelOn(color);

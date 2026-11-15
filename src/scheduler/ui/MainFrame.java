@@ -25,15 +25,24 @@ public final class MainFrame extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    /** Sistemin görünümünü (Look and Feel) uygular ve pencereyi açar. */
-    public static void launch() {
+    /**
+     * Sistemin görünümünü (Look and Feel) uygular ve pencereyi açar.
+     *
+     * @param dark {@code true} ise koyu, değilse açık temayla başlar
+     */
+    public static void launch(boolean dark) {
+        // macOS'ta pencere başlığını temayla uyumlu yapar; pencere açılmadan önce ayarlanmalıdır.
         System.setProperty("apple.awt.application.name", TITLE);
+        System.setProperty("apple.awt.application.appearance",
+                dark ? "NSAppearanceNameDarkAqua" : "NSAppearanceNameAqua");
+
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e) {
                 // Sistem görünümü yüklenemezse Java'nın varsayılan görünümüyle devam edilir.
             }
+            Theme.setDark(dark);
             new MainFrame().setVisible(true);
         });
     }
